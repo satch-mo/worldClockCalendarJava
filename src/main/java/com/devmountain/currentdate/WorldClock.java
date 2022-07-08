@@ -54,5 +54,4 @@ public class WorldClock {
         ZonedDateTime now = ZonedDateTime.now();
         return now.withZoneSameInstant(ZoneId.of("Asia/Tokyo"));
     }
-
 }

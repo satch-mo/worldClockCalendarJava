@@ -15,15 +15,13 @@ public class CalendarHelper {
     private List<LocalDate> holidayList;
 
     public CalendarHelper(String birthdayString) {
-        //create DateTimeFormatter with the pattern "M/d/yyyy"
-        //formatter = ???;
 
-        //convert String to LocalDate
-        //birthdayLocalDate = ???;
-        //nowLocalDate = ???;
-        //currentYear = ???;
+        formatter = DateTimeFormatter.ofPattern("MM/dd/uuuu");
+        birthdayLocalDate = LocalDate.parse(birthdayString, formatter);
+        nowLocalDate = LocalDate.now();
+        currentYear = nowLocalDate.getYear();
+        holidayList = initHolidayList(currentYear, nowLocalDate);
 
-        //holidayList = initHolidayList(currentYear, nowLocalDate);
     }
 
     public void displayDaysRemainingToHolidaysAndBirthday() {
@@ -44,21 +42,57 @@ public class CalendarHelper {
          *    coming birthday
          */
 
-        // you code here
+        int dayOfYearForNow = nowLocalDate.getDayOfYear();  // getDayOfYear() method
+        int remainingDay = 0;
+        int smallestRemainingDays = 1000;
+        LocalDate closestHoliday = null;
         for (LocalDate eachHoliday : holidayList) {
-             //you code here
+            int dayOfYearHoliday = eachHoliday.getDayOfYear();
+            if (dayOfYearForNow <= dayOfYearHoliday) {
+                remainingDay = dayOfYearHoliday - dayOfYearForNow;
+                if (isRemainingDaySmallest(smallestRemainingDays, remainingDay)) {
+                    smallestRemainingDays = remainingDay;
+                    closestHoliday = eachHoliday;
+                    System.out.println();
+                }
                 //Display the remainingDay between the current day and the corresponding holiday
-//                System.out.println("There are " + remainingDay + " days remaining before Holiday (" + formatter.format(eachHoliday) + ")");
+                System.out.println("There are " + remainingDay + " days remaining before Holiday (" + formatter.format(eachHoliday) + ")");
+            } else {
+                remainingDay = 365 - dayOfYearForNow + dayOfYearHoliday;
+                if (isRemainingDaySmallest(smallestRemainingDays, remainingDay)) {
+                    smallestRemainingDays = remainingDay;
+                    closestHoliday = eachHoliday;
+                    System.out.println();
+                }
+                //Display the remainingDay between the current day and the corresponding holiday
+                System.out.println("There are " + remainingDay + " days remaining before Holiday (" + formatter.format(eachHoliday) + ")");
+            }
         }
         //Display the Holiday which is closest to the current day
-//        System.out.println("the closest Holiday to the current date (" + formatter.format(nowLocalDate) + ") is: " + formatter.format(closestHoliday));
+        System.out.println("the closest Holiday to the current date (" + formatter.format(nowLocalDate) + ") is: " + formatter.format(closestHoliday));
 
         /*
          * Now start calculating the remaining day between the current date and the birthday
          */
-           //your code starts here
-         //Display the remainingDay between the current day and the birthday
- //       System.out.println("There are " + remainingDay + " days remaining before your " + age + "th birthday (" + formatter.format(nextBirthdayLocalDate) + ")");
+        int dayOfYearForBirthday = birthdayLocalDate.getDayOfYear();
+        int age = nowLocalDate.getYear() - birthdayLocalDate.getYear();
+        LocalDate nextBirthdayLocalDate = birthdayLocalDate.withYear(nowLocalDate.getYear());
+        if (dayOfYearForNow <= dayOfYearForBirthday) {
+            remainingDay = dayOfYearForBirthday - dayOfYearForNow;
+        } else {
+            remainingDay = dayOfYearForBirthday + 365 - dayOfYearForNow;
+            age++;
+            nextBirthdayLocalDate = birthdayLocalDate.withYear(nowLocalDate.getYear() + 1);
+        }
+        //Display the remainingDay between the current day and the birthday
+        System.out.println("There are " + remainingDay + " days remaining before your " + age + "th birthday (" + formatter.format(nextBirthdayLocalDate) + ")");
+    }
+
+    private boolean isRemainingDaySmallest(int smallestRemainingDay, int remainingDay) {
+        boolean isSmallest = false;
+        if(remainingDay < smallestRemainingDay)
+            isSmallest = true;
+        return isSmallest;
     }
 
 
